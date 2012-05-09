@@ -25,7 +25,6 @@ pom.xml.*
 website/_site
 
 #Ant
-build.xml
 ant.properties
 local.properties
 proguard.cfg
