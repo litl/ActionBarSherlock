@@ -9,6 +9,7 @@ import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
+import android.view.ViewConfiguration;
 import android.view.ViewGroup;
 import android.view.Window;
 import com.actionbarsherlock.app.ActionBar;
@@ -23,6 +24,7 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 import java.lang.reflect.Constructor;
+import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -165,6 +167,7 @@ public abstract class ActionBarSherlock {
      * @return Instance to interact with the action bar.
      */
     public static ActionBarSherlock wrap(Activity activity, int flags) {
+        forceEnableOverflowForHoneycombAndLater(activity);
         //Create a local implementation map we can modify
         HashMap<Implementation, Class<? extends ActionBarSherlock>> impls =
                 new HashMap<Implementation, Class<? extends ActionBarSherlock>>(IMPLEMENTATIONS);
@@ -240,7 +243,26 @@ public abstract class ActionBarSherlock {
             throw new RuntimeException(e);
         }
     }
+    
 
+    /**
+     * XXX force enable oveflow in the menu for HONEYCOMB and later, so every
+     * menu will have 3 dots(more) button instead of hardware menu button
+     */
+    private static void forceEnableOverflowForHoneycombAndLater(Context context) {
+        try {
+            ViewConfiguration config = ViewConfiguration.get(context);
+            Field menuKeyField = ViewConfiguration.class.getDeclaredField("sHasPermanentMenuKey");
+            if (menuKeyField != null) {
+                menuKeyField.setAccessible(true);
+                menuKeyField.setBoolean(config, false);
+            }
+        } catch (Exception ex) {
+            // Ignore
+        }
+    }
+
+    
 
     /** Activity which is displaying the action bar. Also used for context. */
     protected final Activity mActivity;

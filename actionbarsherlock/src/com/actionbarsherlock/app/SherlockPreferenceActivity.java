@@ -1,6 +1,7 @@
 package com.actionbarsherlock.app;
 
 import android.content.res.Configuration;
+import android.os.Build;
 import android.os.Bundle;
 import android.preference.PreferenceActivity;
 import android.view.KeyEvent;
@@ -272,5 +273,18 @@ public abstract class SherlockPreferenceActivity extends PreferenceActivity impl
 
     public void setSupportSecondaryProgress(int secondaryProgress) {
         getSherlock().setSecondaryProgress(secondaryProgress);
+    }
+    
+    @Override
+    public boolean onKeyUp(int keyCode, KeyEvent event) {
+        if (Build.VERSION.SDK_INT <  Build.VERSION_CODES.HONEYCOMB) {
+            if (event.getAction() == KeyEvent.ACTION_UP &&
+                keyCode == KeyEvent.KEYCODE_MENU) {
+                openOptionsMenu();
+                return true;
+            }
+        }
+
+        return super.onKeyUp(keyCode, event);
     }
 }
